@@ -1,0 +1,35 @@
+{
+  "name": "anonchat-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-quality anonymous random chat platform tailored for the Indian market",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "build:packages": "npm run build --workspace=packages/types && npm run build --workspace=packages/shared && npm run build --workspace=packages/ui",
+    "docker:up": "docker-compose up -d --build",
+    "docker:down": "docker-compose down",
+    "build": "npm run build:packages && npm run build --workspace=apps/server && npm run build --workspace=apps/web",
+    "test": "npm run test --workspace=apps/server",
+    "test:e2e": "npm run test:e2e --workspace=apps/web",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
