@@ -1,28 +1,27 @@
-# AnonChat Backend Service
+# AnonChat Backend Service ⚡
 
-Autonomous Express + Socket.io + Redis Backend for AnonChat.
+Standalone Express, Socket.io, and Redis matchmaking server for AnonChat.
 
 ## Tech Stack
-- Node.js 20+
-- Express.js
-- Socket.io (WebSockets)
-- Redis (IORedis) & Matchmaking Engine
-- Pino Logging & Zod Validation
-- TypeScript
+- **Node.js 20+** & **TypeScript**
+- **Express.js** (HTTP API & Health Check)
+- **Socket.io** (Real-time Matchmaking, Messaging & WebRTC Signaling)
+- **Redis (IORedis)** (High-performance matchmaking queues)
+- **Pino** (Structured logging) & **Zod** (Data validation)
 
-## Quick Start (Standalone)
+## Setup & Running
 
 ```bash
 # 1. Install dependencies
 pnpm install
 
-# 2. Run in development mode
+# 2. Start development server
 pnpm dev
 
-# 3. Build for production
+# 3. Compile TypeScript for production
 pnpm build
 
-# 4. Start production server
+# 4. Start production build
 pnpm start
 ```
 
