@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: onlineengage-backend
+    env: node
+    rootDir: backend
+    buildCommand: pnpm install && pnpm build
+    startCommand: node dist/index.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        value: rediss://default:gQAAAAAAAqq0AAIgcDE2YWIyYWU1ZjUwNTE0NWIwYjAxYjRlYTllYjRmNzJmMw@coherent-locust-174772.upstash.io:6379
+      - key: CORS_ORIGIN
+        value: "*"
