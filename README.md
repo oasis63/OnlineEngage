@@ -1,137 +1,108 @@
-# AnonChat - Anonymous Random Chat Platform (India)
+# AnonChat — Anonymous Video, Voice & Text Chat Platform 🚀
 
-**AnonChat** is a production-quality, high-performance, anonymous random video, voice, and text chat platform inspired by Omegle, engineered specifically for the Indian market. Built with zero signup requirements, zero persistent database storage, sub-second Redis priority matchmaking, and peer-to-peer WebRTC encrypted media streams.
+AnonChat is a modern, privacy-first, 1-on-1 anonymous messaging and multimedia platform designed for real-time connection across India.
 
----
-
-## 📖 About AnonChat
-
-AnonChat connects strangers across India for instant, 100% anonymous conversations. Whether you want to text, voice call, or video chat, AnonChat pairs you with like-minded users based on shared interests and regional Indian languages—with zero data collection or account creation.
-
-### 🌟 Key Features
-
-- **100% Anonymous & Secure**: No signups, no passwords, no email verification, no tracking cookies, and no persistent database storage.
-- **Indian Regional Languages Support**: Native support for English, Hindi (`हिन्दी`), Tamil (`தமிழ்`), Kannada (`<ctrl42>ಕನ್ನಡ`), Malayalam (`മലയാളം`), Telugu (`తెలుగు`), Marathi (`मराठी`), and Gujarati (`ગુજરાતી`).
-- **Interest-Based Matchmaking**: Priority Redis matchmaking engine pairs users who share similar interest tags (`#coding`, `#bollywood`, `#cricket`, etc.) before falling back to random match.
-- **Multi-Mode Support**:
-  - **Text Chat**: Real-time Socket.IO chat with typing indicators, message timestamps, auto-scrolling, and unread counters.
-  - **Video Chat**: High-definition WebRTC video with local floating preview, remote full-screen mode, mute mic, turn camera on/off, and mirror toggles.
-  - **Voice Chat**: Audio-only WebRTC mode with animated audio frequency indicators.
-- **Instant Skip / Next**: One-click "Next Stranger" disconnects current stranger and instantly queues you for a new match.
-- **Enterprise Security & Rate Limiting**: Built-in sliding-window rate limiters for messages and queue joins, Helmet HTTP security headers, and strict CORS rules.
+The project is structured into **two 100% independent Git repositories** (`backend` and `frontend`) that can be deployed, scaled, and maintained completely separately.
 
 ---
 
-## 💻 Tech Stack
+## ✨ Features
 
-- **Frontend**: Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, `@anonchat/ui`, Zustand, Socket.IO Client, WebRTC
-- **Backend**: Node.js, Express, TypeScript, Socket.IO Server, Redis (`ioredis`), Pino Logger
-- **Infrastructure**: Docker, Docker Compose, Redis 7, Coturn (TURN/STUN), Nginx Reverse Proxy
-- **Testing**: Vitest (Unit tests), Playwright (E2E tests)
+- **🎥 HD Video Chat**: 50/50 Dual Equal View and PIP Overlay View with zero WebRTC feed interruptions.
+- **🎙️ Crystal-Clear Voice Chat**: Low-latency peer-to-peer audio calls using STUN/TURN (Coturn) servers.
+- **💬 Text Chat**: Instant messaging with bright emerald scrollbars, partner typing indicators, and rate-limit protection.
+- **❤️ Gender Preference Matching**: Prioritizes user's interested gender (Female, Male, Other, Anyone) with automatic fallback.
+- **🌐 8 Indian Languages Filter**: Filter matches by Hindi, English, Hinglish, Tamil, Telugu, Kannada, Malayalam, or Marathi.
+- **✨ Shared Interest Matching**: Tag-based matchmaking with shared interest highlights.
+- **🔒 Privacy & Zero Sign-Up**: No personal data, email, or login required. Temporary session storage only.
+- **📱 Mobile Secure Context Support**: Built-in Mobile Chrome flag setup guide (`chrome://flags/#unsafely-treat-insecure-origin-as-secure`) for IP/HTTPS access.
 
 ---
 
-## 🚀 How to Run the App
+## 🏗️ Architecture & Independent Repository Structure
 
-### Option A: Running Locally (Development Mode)
+```
+OnlineEngage/
+├── backend/            # Independent Git Repo (Node.js + Express + Socket.io + Redis)
+│   ├── src/
+│   │   ├── config/     # Environment configuration
+│   │   ├── middleware/ # Rate limiters & error handlers
+│   │   ├── services/   # Redis matchmaking engine
+│   │   ├── shared/     # Local schemas & constants
+│   │   ├── types/      # Local TypeScript interfaces
+│   │   └── utils/      # Pino logger & helpers
+│   ├── Dockerfile      # Independent multi-stage Docker build
+│   ├── package.json    # Backend dependencies
+│   ├── tsconfig.json   # Backend TypeScript configuration
+│   └── README.md       # Backend setup guide
+│
+├── frontend/           # Independent Git Repo (Next.js 14 App Router)
+│   ├── src/
+│   │   ├── app/        # App Router pages (Home, About, Settings)
+│   │   ├── components/ # VideoChat, VoiceChat, TextChat, RightSidebar, UI primitives
+│   │   ├── hooks/      # useSocket, useWebRTC, useMediaDevices
+│   │   ├── shared/     # Local schemas & constants
+│   │   ├── stores/     # Zustand state stores
+│   │   └── types/      # Local TypeScript interfaces
+│   ├── Dockerfile      # Independent Next.js standalone Docker build
+│   ├── package.json    # Frontend dependencies
+│   ├── tsconfig.json   # Frontend TypeScript configuration
+│   └── README.md       # Frontend setup guide
+│
+├── docker/             # Nginx reverse proxy SSL certs & Coturn TURN configuration
+└── docker-compose.yml  # Multi-container orchestration for local stack
+```
 
-#### Prerequisites
-- Node.js `v18+` or `v20+`
-- `pnpm` (recommended) or `npm`
+---
 
-#### 1. Clone & Install Dependencies
+## 🛠️ Pushing to Separate Remote Git Repositories
+
+Because `backend` and `frontend` are independent Git repositories (`.git`), you can push them to separate GitHub/GitLab repositories independently:
+
+### Push Backend Repo
 ```bash
-# Install dependencies across all monorepo workspaces
+cd backend
+git remote add origin https://github.com/your-username/anonchat-backend.git
+git branch -M main
+git push -u origin main
+```
+
+### Push Frontend Repo
+```bash
+cd frontend
+git remote add origin https://github.com/your-username/anonchat-frontend.git
+git branch -M main
+git push -u origin main
+```
+
+---
+
+## 💻 Standalone Local Development
+
+### 1. Run Backend Server (`./backend`)
+```bash
+cd backend
 pnpm install
-# OR using npm
-npm install
+pnpm dev       # Starts Express + Socket.io server on http://localhost:4000
 ```
 
-#### 2. Build Monorepo Shared Packages
+### 2. Run Frontend Application (`./frontend`)
 ```bash
-pnpm run build:packages
-# OR using npm
-npm run build:packages
+cd frontend
+pnpm install
+pnpm dev       # Starts Next.js dev server on http://localhost:3000
 ```
-
-#### 3. Start Redis Server (Optional)
-Redis is used for queue matchmaking. If Redis is not running locally, the server automatically falls back to its built-in in-memory queue.
-To run Redis via Docker:
-```bash
-docker run -d -name anonchat-redis -p 6379:6379 redis:7-alpine
-```
-
-#### 4. Start Development Servers (Backend + Frontend)
-```bash
-pnpm run dev
-# OR using npm
-npm run dev
-```
-
-- **Web Frontend**: `http://localhost:3000`
-- **Backend Socket Server**: `http://localhost:4000`
 
 ---
 
-### Option B: Single Command Setup with Docker Compose (Recommended)
+## 🐳 Docker Deployment (Full Stack)
 
-Yes! You can run the **entire full-stack application** (Frontend, Backend, Redis, Coturn TURN server, and Nginx proxy) with **a single command** from the project root:
+Run all 5 containers (Backend, Frontend, Redis, Coturn, Nginx) with a single command:
 
 ```bash
 docker-compose up -d --build
 ```
-*(Or `docker compose up -d --build`)*
 
-This single command automatically builds and launches all 5 services:
-1. **Next.js Web Frontend** (accessible at `http://localhost:3000` or via Nginx at `http://localhost`)
-2. **Node.js Socket Backend** (listening on `http://localhost:4000`)
-3. **Redis Matchmaking Store** (`redis://localhost:6379`)
-4. **Coturn TURN/STUN Media Server** (listening on `port 3478`)
-5. **Nginx Reverse Proxy** (`http://localhost:80`)
-
----
-
-## 🧪 Running Tests
-
-### Unit Tests (Vitest)
-Runs unit tests for the Redis matchmaking priority algorithm:
-```bash
-pnpm run test
-```
-
-### End-to-End Tests (Playwright)
-Runs E2E browser test flows:
-```bash
-pnpm run test:e2e
-```
-
----
-
-## 📁 Monorepo Folder Structure
-
-```
-OnlineEngage/
-├── package.json               # Root monorepo workspace configuration
-├── pnpm-workspace.yaml        # Workspace package mapping
-├── tsconfig.json              # Shared TypeScript base configuration
-├── apps/
-│   ├── server/                # Backend Socket.IO & Express application
-│   │   ├── src/
-│   │   │   ├── services/
-│   │   │   │   └── matchmaking.service.ts # Priority match algorithm
-│   │   │   ├── sockets/       # Socket handlers (chat, queue, webrtc)
-│   │   │   └── index.ts       # Express server entry point
-│   │   └── tests/             # Vitest test suite
-│   └── web/                   # Next.js 14 App Router frontend
-│       ├── src/
-│       │   ├── app/           # Next.js pages (/, /settings, /about)
-│       │   ├── components/    # Chat UI components (Text, Video, Voice, Controls)
-│       │   ├── hooks/         # Custom hooks (useSocket, useWebRTC, useMediaDevices)
-│       │   └── stores/        # Zustand state management
-│       └── e2e/               # Playwright tests
-├── packages/
-│   ├── types/                 # Shared TypeScript event interfaces
-│   ├── shared/                # Validation schemas & language constants
-│   └── ui/                    # Dark glassmorphism component system
-└── docker/                    # Dockerfiles, Compose, Nginx, and Coturn configs
-```
+Access the live application at:
+- **HTTPS Reverse Proxy**: `https://localhost:8443` or `https://<YOUR_LOCAL_IP>:8443`
+- **HTTP Proxy**: `http://localhost:8080`

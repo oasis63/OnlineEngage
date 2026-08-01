@@ -9,7 +9,7 @@ interface RateLimitTracker {
 
 const socketLimitsMap = new Map<string, RateLimitTracker>();
 
-export function isSocketRateLimited(socket: Socket, event: 'message' | 'joinQueue' | 'next'): { limited: boolean; retryAfterMs: number } {
+export function isSocketRateLimited(socket: Socket | { id: string }, event: 'message' | 'joinQueue' | 'next'): { limited: boolean; retryAfterMs: number } {
   const now = Date.now();
   let tracker = socketLimitsMap.get(socket.id);
 
@@ -39,7 +39,6 @@ export function isSocketRateLimited(socket: Socket, event: 'message' | 'joinQueu
   }
 
   if (event === 'message') {
-    // Sliding window of 1 second
     tracker.messageTimestamps = tracker.messageTimestamps.filter((t) => now - t < 1000);
     if (tracker.messageTimestamps.length >= RATE_LIMIT_CONFIG.MESSAGES_PER_SECOND) {
       return { limited: true, retryAfterMs: 1000 };
@@ -53,3 +52,10 @@ export function isSocketRateLimited(socket: Socket, event: 'message' | 'joinQueu
 export function cleanupSocketRateLimit(socketId: string) {
   socketLimitsMap.delete(socketId);
 }
+
+export const rateLimiter = {
+  checkJoinQueue: (socketId: string) => isSocketRateLimited({ id: socketId }, 'joinQueue'),
+  checkNextButton: (socketId: string) => isSocketRateLimited({ id: socketId }, 'next'),
+  checkChatMessage: (socketId: string) => isSocketRateLimited({ id: socketId }, 'message'),
+  cleanup: (socketId: string) => cleanupSocketRateLimit(socketId),
+};

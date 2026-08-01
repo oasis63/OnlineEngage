@@ -1,8 +1,10 @@
 import { Redis } from 'ioredis';
+import { Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { QueueMode, IndianLanguage, UserSession, UserGender, GenderPreference } from '../types/index.js';
 import { findMatchingInterests } from '../shared/index.js';
 import { logger } from '../utils/logger.js';
+import { redisClient } from './redis.js';
 
 export interface MatchResult {
   roomId: string;
@@ -18,7 +20,8 @@ export class MatchmakingService {
     ['voice', new Map()],
     ['video', new Map()],
   ]);
-  private inMemoryRooms: Map<string, { userAId: string; userBId: string; mode: QueueMode }> = new Map();
+  private inMemoryRooms: Map<string, { userA: string; userB: string; mode: QueueMode }> = new Map();
+  private userToRoom: Map<string, string> = new Map();
 
   constructor(redisClient?: Redis | null) {
     this.redis = redisClient || null;
@@ -30,6 +33,74 @@ export class MatchmakingService {
 
   private getSessionKey(socketId: string): string {
     return `session:${socketId}`;
+  }
+
+  private calculateMatchScore(user: UserSession, candidate: UserSession): { score: number; shared: string[] } {
+    const shared = findMatchingInterests(user.interests, candidate.interests);
+    const isSameLanguage = user.language === candidate.language;
+
+    const userMatchesCand = user.interestedIn === 'all' || user.interestedIn === candidate.gender;
+    const candMatchesUser = candidate.interestedIn === 'all' || candidate.interestedIn === user.gender;
+
+    let score = 10;
+
+    if (userMatchesCand && candMatchesUser) {
+      if (user.interestedIn !== 'all' || candidate.interestedIn !== 'all') {
+        score += 500;
+      } else {
+        score += 300;
+      }
+    } else if (userMatchesCand || candMatchesUser) {
+      score += 200;
+    }
+
+    if (isSameLanguage) {
+      score += 100;
+    }
+
+    if (shared.length > 0) {
+      score += 50 + shared.length * 20;
+    }
+
+    const now = Date.now();
+    const waitSeconds = Math.min(Math.floor((now - candidate.joinedAt) / 1000), 60);
+    score += waitSeconds * 2;
+
+    return { score, shared };
+  }
+
+  async enqueueUser(session: UserSession, io: Server): Promise<void> {
+    const match = await this.addUserToQueue(session);
+    if (match) {
+      this.userToRoom.set(match.userA.socketId, match.roomId);
+      this.userToRoom.set(match.userB.socketId, match.roomId);
+
+      // Emit matched event to User A
+      io.to(match.userA.socketId).emit('matched', {
+        roomId: match.roomId,
+        partnerSocketId: match.userB.socketId,
+        mode: match.userA.mode,
+        peerInitiator: true,
+        partnerName: match.userB.name,
+        partnerGender: match.userB.gender,
+        partnerAge: match.userB.age,
+        partnerLanguage: match.userB.language,
+        sharedInterests: match.sharedInterests,
+      });
+
+      // Emit matched event to User B
+      io.to(match.userB.socketId).emit('matched', {
+        roomId: match.roomId,
+        partnerSocketId: match.userA.socketId,
+        mode: match.userB.mode,
+        peerInitiator: false,
+        partnerName: match.userA.name,
+        partnerGender: match.userA.gender,
+        partnerAge: match.userA.age,
+        partnerLanguage: match.userA.language,
+        sharedInterests: match.sharedInterests,
+      });
+    }
   }
 
   async addUserToQueue(session: UserSession): Promise<MatchResult | null> {
@@ -62,45 +133,6 @@ export class MatchmakingService {
 
     this.inMemoryQueue.get(mode)?.set(socketId, session);
     return this.tryMatchInMemory(session);
-  }
-
-  private calculateMatchScore(user: UserSession, candidate: UserSession): { score: number; shared: string[] } {
-    const shared = findMatchingInterests(user.interests, candidate.interests);
-    const isSameLanguage = user.language === candidate.language;
-
-    // Check gender preference compatibility
-    const userMatchesCand = user.interestedIn === 'all' || user.interestedIn === candidate.gender;
-    const candMatchesUser = candidate.interestedIn === 'all' || candidate.interestedIn === user.gender;
-
-    let score = 10; // Base connection score
-
-    // Gender Match Priority: Heavy weighting so interested gender is matched first
-    if (userMatchesCand && candMatchesUser) {
-      if (user.interestedIn !== 'all' || candidate.interestedIn !== 'all') {
-        score += 500; // Perfect mutual specific gender preference match
-      } else {
-        score += 300; // Both open to all
-      }
-    } else if (userMatchesCand || candMatchesUser) {
-      score += 200; // One-way gender match
-    }
-
-    // Language Match Priority
-    if (isSameLanguage) {
-      score += 100;
-    }
-
-    // Shared Interests Bonus
-    if (shared.length > 0) {
-      score += 50 + shared.length * 20;
-    }
-
-    // Waiting time bonus (up to 60 bonus points for users waiting in queue)
-    const now = Date.now();
-    const waitSeconds = Math.min(Math.floor((now - candidate.joinedAt) / 1000), 60);
-    score += waitSeconds * 2;
-
-    return { score, shared };
   }
 
   private async tryMatchRedis(user: UserSession): Promise<MatchResult | null> {
@@ -150,8 +182,14 @@ export class MatchmakingService {
 
       const roomId = `room:${uuidv4()}`;
       await this.redis.hset(roomId, {
-        userAId: user.socketId,
-        userBId: bestCandidate.socketId,
+        userA: user.socketId,
+        userB: bestCandidate.socketId,
+        mode: user.mode,
+      });
+
+      this.inMemoryRooms.set(roomId, {
+        userA: user.socketId,
+        userB: bestCandidate.socketId,
         mode: user.mode,
       });
 
@@ -192,8 +230,8 @@ export class MatchmakingService {
 
       const roomId = `room:${uuidv4()}`;
       this.inMemoryRooms.set(roomId, {
-        userAId: user.socketId,
-        userBId: bestCandidate.socketId,
+        userA: user.socketId,
+        userB: bestCandidate.socketId,
         mode: user.mode,
       });
 
@@ -208,6 +246,12 @@ export class MatchmakingService {
     return null;
   }
 
+  async dequeueUser(socketId: string): Promise<void> {
+    for (const mode of ['text', 'voice', 'video'] as QueueMode[]) {
+      await this.removeUserFromQueue(socketId, mode);
+    }
+  }
+
   async removeUserFromQueue(socketId: string, mode: QueueMode): Promise<void> {
     if (this.redis && this.redis.status === 'ready') {
       try {
@@ -220,14 +264,14 @@ export class MatchmakingService {
     this.inMemoryQueue.get(mode)?.delete(socketId);
   }
 
-  async getRoom(roomId: string): Promise<{ userAId: string; userBId: string; mode: QueueMode } | null> {
+  async getRoom(roomId: string): Promise<{ userA: string; userB: string; mode: QueueMode } | null> {
     if (this.redis && this.redis.status === 'ready') {
       try {
         const data = await this.redis.hgetall(roomId);
-        if (data && data.userAId && data.userBId) {
+        if (data && data.userA && data.userB) {
           return {
-            userAId: data.userAId,
-            userBId: data.userBId,
+            userA: data.userA,
+            userB: data.userB,
             mode: data.mode as QueueMode,
           };
         }
@@ -236,6 +280,27 @@ export class MatchmakingService {
       }
     }
     return this.inMemoryRooms.get(roomId) || null;
+  }
+
+  async leaveRoom(roomId: string, socketId: string, io: Server): Promise<void> {
+    const room = await this.getRoom(roomId);
+    if (room) {
+      const partnerSocketId = room.userA === socketId ? room.userB : room.userA;
+      if (partnerSocketId) {
+        io.to(partnerSocketId).emit('partnerLeft', { roomId, reason: 'Stranger disconnected' });
+        this.userToRoom.delete(partnerSocketId);
+      }
+      this.userToRoom.delete(socketId);
+      await this.removeRoom(roomId);
+    }
+  }
+
+  async handleDisconnect(socketId: string, io: Server): Promise<void> {
+    await this.dequeueUser(socketId);
+    const roomId = this.userToRoom.get(socketId);
+    if (roomId) {
+      await this.leaveRoom(roomId, socketId, io);
+    }
   }
 
   async removeRoom(roomId: string): Promise<void> {
@@ -249,3 +314,5 @@ export class MatchmakingService {
     this.inMemoryRooms.delete(roomId);
   }
 }
+
+export const matchmakingService = new MatchmakingService(redisClient);
