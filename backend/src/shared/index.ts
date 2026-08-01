@@ -15,8 +15,8 @@ export const SUPPORTED_LANGUAGES: { code: IndianLanguage; name: string; nativeNa
 export const RATE_LIMIT_CONFIG = {
   MAX_MESSAGES_PER_MINUTE: 30,
   WINDOW_MS: 60000,
-  JOIN_QUEUE_COOLDOWN_MS: 3000,
-  NEXT_BUTTON_COOLDOWN_MS: 2000,
+  JOIN_QUEUE_COOLDOWN_MS: 2000,
+  NEXT_BUTTON_COOLDOWN_MS: 1500,
   MESSAGES_PER_SECOND: 5,
 };
 
@@ -31,9 +31,9 @@ export const joinQueueSchema = z.object({
 });
 
 export const chatMessageSchema = z.object({
-  roomId: z.string().uuid(),
+  roomId: z.string().min(1, 'Room ID is required'),
   content: z.string().min(1, 'Message cannot be empty').max(1000, 'Message too long'),
-  timestamp: z.number(),
+  timestamp: z.number().optional(),
 });
 
 export function sanitizeInterests(interests: string[]): string[] {
