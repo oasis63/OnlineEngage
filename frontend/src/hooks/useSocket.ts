@@ -5,7 +5,15 @@ import { io, Socket } from 'socket.io-client';
 import { useChatStore } from '../stores/useChatStore';
 import { ClientToServerEvents, ServerToClientEvents, ChatMessagePayload } from '../types/index';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'https://192.168.1.17:8443';
+const getSocketUrl = () => {
+  if (process.env.NEXT_PUBLIC_SOCKET_URL) {
+    return process.env.NEXT_PUBLIC_SOCKET_URL;
+  }
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return 'http://localhost:4000';
+};
 
 export function useSocket() {
   const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
@@ -30,10 +38,13 @@ export function useSocket() {
   } = useChatStore();
 
   useEffect(() => {
-    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_URL, {
+    const socketUrl = getSocketUrl();
+    const isHttps = socketUrl.startsWith('https://');
+
+    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(socketUrl, {
       transports: ['websocket', 'polling'],
-      secure: true,
-      rejectUnauthorized: false, // Allows connection for local testing
+      secure: isHttps,
+      rejectUnauthorized: false,
     });
 
     socketRef.current = socket;
