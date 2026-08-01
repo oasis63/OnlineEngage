@@ -10,7 +10,9 @@ const getSocketUrl = () => {
     return process.env.NEXT_PUBLIC_SOCKET_URL;
   }
   if (typeof window !== 'undefined') {
-    if (window.location.origin.includes('vercel.app')) {
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.');
+    if (!isLocal) {
       return 'https://onlineengage.onrender.com';
     }
     return window.location.origin;
