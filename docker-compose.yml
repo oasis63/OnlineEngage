@@ -1,16 +1,17 @@
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: anonchat-redis
-    restart: always
-    ports:
-      - "6379:6379"
-    command: redis-server --save 60 1 --loglevel warning
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+  # Local Redis Service (Commented out for Upstash Cloud Redis, uncomment below for local testing)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: anonchat-redis
+  #   restart: always
+  #   ports:
+  #     - "6379:6379"
+  #   command: redis-server --save 60 1 --loglevel warning
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 5
 
   coturn:
     image: coturn/coturn:latest
@@ -33,14 +34,16 @@ services:
     environment:
       PORT: 4000
       NODE_ENV: production
-      REDIS_URL: redis://redis:6379
+      # Upstash Cloud Redis URL (Uncomment redis://redis:6379 for local Docker Redis testing)
+      REDIS_URL: rediss://default:gQAAAAAAAqq0AAIgcDE2YWIyYWU1ZjUwNTE0NWIwYjAxYjRlYTllYjRmNzJmMw@coherent-locust-174772.upstash.io:6379
+      # REDIS_URL: redis://redis:6379
       CORS_ORIGIN: "*"
       LOG_LEVEL: info
     ports:
       - "4000:4000"
-    depends_on:
-      redis:
-        condition: service_healthy
+    # depends_on:
+    #   redis:
+    #     condition: service_healthy
 
   web:
     build:
