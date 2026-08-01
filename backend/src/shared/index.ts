@@ -1,39 +1,49 @@
 import { z } from 'zod';
+import { IndianLanguage } from '../types/index.js';
+
+export const SUPPORTED_LANGUAGES: { code: IndianLanguage; name: string; nativeName: string }[] = [
+  { code: 'hindi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'english', name: 'English', nativeName: 'English' },
+  { code: 'hinglish', name: 'Hinglish', nativeName: 'Hinglish' },
+  { code: 'tamil', name: 'Tamil', nativeName: 'தமிழ்' },
+  { code: 'telugu', name: 'Telugu', nativeName: 'తెలుగు' },
+  { code: 'kannada', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
+  { code: 'malayalam', name: 'Malayalam', nativeName: 'മലയാളം' },
+  { code: 'marathi', name: 'Marathi', nativeName: 'मराठी' },
+];
 
 export const RATE_LIMIT_CONFIG = {
-  MESSAGES_PER_SECOND: 5,
-  JOIN_QUEUE_COOLDOWN_MS: 1500,
+  MAX_MESSAGES_PER_MINUTE: 30,
+  WINDOW_MS: 60000,
+  JOIN_QUEUE_COOLDOWN_MS: 3000,
   NEXT_BUTTON_COOLDOWN_MS: 2000,
+  MESSAGES_PER_SECOND: 5,
 };
 
 export const joinQueueSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(30),
+  name: z.string().min(1, 'Name is required').max(30, 'Name too long'),
   gender: z.enum(['male', 'female', 'other']),
-  interestedIn: z.enum(['all', 'male', 'female', 'other']).optional().default('all'),
-  age: z.coerce.number().min(13, 'Must be at least 13 years old').max(120),
-  mode: z.enum(['text', 'voice', 'video']),
-  language: z.enum(['en', 'hi', 'ta', 'kn', 'ml', 'te', 'mr', 'gu']),
-  interests: z.array(z.string().min(1).max(30)).optional().default([]),
+  interestedIn: z.enum(['male', 'female', 'other', 'all']).default('all'),
+  age: z.number().min(13, 'Must be at least 13').max(120, 'Invalid age'),
+  mode: z.enum(['text', 'video', 'voice']),
+  language: z.enum(['hindi', 'english', 'hinglish', 'tamil', 'telugu', 'kannada', 'malayalam', 'marathi']),
+  interests: z.array(z.string()).max(10, 'Maximum 10 interests allowed').default([]),
 });
 
 export const chatMessageSchema = z.object({
-  roomId: z.string().min(1),
-  messageId: z.string().min(1),
-  content: z.string().min(1).max(2000),
+  roomId: z.string().uuid(),
+  content: z.string().min(1, 'Message cannot be empty').max(1000, 'Message too long'),
   timestamp: z.number(),
 });
 
-export function sanitizeInterests(rawInterests: string[] = []): string[] {
-  return Array.from(
-    new Set(
-      rawInterests
-        .map((i) => i.trim().toLowerCase().replace(/[^a-z0-9_-]/gi, ''))
-        .filter((i) => i.length > 0 && i.length <= 30),
-    ),
-  ).slice(0, 10);
+export function sanitizeInterests(interests: string[]): string[] {
+  return interests
+    .map((tag) => tag.trim().toLowerCase().replace(/[^a-z0-9_-]/gi, ''))
+    .filter((tag) => tag.length > 0 && tag.length <= 20)
+    .slice(0, 10);
 }
 
-export function findMatchingInterests(listA: string[] = [], listB: string[] = []): string[] {
-  const setB = new Set(listB.map((i) => i.toLowerCase()));
-  return listA.filter((item) => setB.has(item.toLowerCase()));
+export function findMatchingInterests(a: string[] = [], b: string[] = []): string[] {
+  const setB = new Set(b.map((i) => i.toLowerCase()));
+  return a.filter((interest) => setB.has(interest.toLowerCase()));
 }

@@ -1,12 +1,12 @@
 export type IndianLanguage =
-  | 'en'
-  | 'hi'
-  | 'ta'
-  | 'kn'
-  | 'ml'
-  | 'te'
-  | 'mr'
-  | 'gu';
+  | 'hindi'
+  | 'english'
+  | 'hinglish'
+  | 'tamil'
+  | 'telugu'
+  | 'kannada'
+  | 'malayalam'
+  | 'marathi';
 
 export type QueueMode = 'text' | 'voice' | 'video';
 
@@ -50,22 +50,24 @@ export interface MatchedPayload {
 
 export interface ChatMessagePayload {
   roomId: string;
-  messageId: string;
   content: string;
   timestamp: number;
 }
 
 export interface TypingPayload {
   roomId: string;
-  isTyping: boolean;
 }
 
 export interface SignalPayload {
+  targetSocketId?: string;
+  fromSocketId?: string;
   roomId: string;
-  sdp: any;
+  signal: any;
 }
 
 export interface IceCandidatePayload {
+  targetSocketId?: string;
+  fromSocketId?: string;
   roomId: string;
   candidate: any;
 }
@@ -93,8 +95,7 @@ export interface ClientToServerEvents {
   message: (payload: ChatMessagePayload) => void;
   typing: (payload: TypingPayload) => void;
   stopTyping: (payload: { roomId: string }) => void;
-  offer: (payload: SignalPayload) => void;
-  answer: (payload: SignalPayload) => void;
+  signal: (payload: SignalPayload) => void;
   iceCandidate: (payload: IceCandidatePayload) => void;
   disconnect: () => void;
 }
@@ -105,10 +106,9 @@ export interface ServerToClientEvents {
   message: (payload: ChatMessagePayload) => void;
   typing: (payload: TypingPayload) => void;
   stopTyping: (payload: { roomId: string }) => void;
-  offer: (payload: SignalPayload) => void;
-  answer: (payload: SignalPayload) => void;
+  signal: (payload: SignalPayload) => void;
   iceCandidate: (payload: IceCandidatePayload) => void;
   partnerLeft: (payload: PartnerLeftPayload) => void;
-  rateLimitExceeded: (payload: { message: string; retryAfterMs: number }) => void;
-  error: (payload: { code: string; message: string }) => void;
+  rateLimitExceeded: (payload: { message: string }) => void;
+  error: (payload: { message: string }) => void;
 }
