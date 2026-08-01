@@ -10,6 +10,9 @@ const getSocketUrl = () => {
     return process.env.NEXT_PUBLIC_SOCKET_URL;
   }
   if (typeof window !== 'undefined') {
+    if (window.location.origin.includes('vercel.app')) {
+      return 'https://onlineengage.onrender.com';
+    }
     return window.location.origin;
   }
   return 'http://localhost:4000';
