@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/Button';
-import { Send, CornerDownLeft, AlertCircle } from 'lucide-react';
+import { Send, AlertCircle, Sparkles, MessageSquare, Flame } from 'lucide-react';
 import { useChatStore, ChatMessage } from '../stores/useChatStore';
 
 interface TextChatProps {
@@ -11,8 +11,15 @@ interface TextChatProps {
   onSendStopTyping: () => void;
 }
 
+const ICEBREAKER_PROMPTS = [
+  '👋 Hey there! Where in India are you chatting from?',
+  '🍿 What movie or series are you currently watching?',
+  '🎮 What games or sports do you enjoy?',
+  '🎵 What music artist are you listening to recently?',
+];
+
 export const TextChat: React.FC<TextChatProps> = ({ onSendMessage, onSendTyping, onSendStopTyping }) => {
-  const { messages, isPartnerTyping, rateLimitWarning } = useChatStore();
+  const { messages, isPartnerTyping, rateLimitWarning, partnerName } = useChatStore();
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -45,6 +52,10 @@ export const TextChat: React.FC<TextChatProps> = ({ onSendMessage, onSendTyping,
     onSendStopTyping();
   };
 
+  const sendIcebreaker = (prompt: string) => {
+    onSendMessage(prompt);
+  };
+
   return (
     <div className="flex flex-col flex-1 h-full min-h-0 bg-zinc-950/60 rounded-2xl border border-zinc-800/80 backdrop-blur-xl overflow-hidden shadow-2xl">
       {/* Rate limit banner */}
@@ -60,10 +71,28 @@ export const TextChat: React.FC<TextChatProps> = ({ onSendMessage, onSendTyping,
         {messages.map((msg: ChatMessage) => {
           if (msg.sender === 'system') {
             return (
-              <div key={msg.id} className="flex justify-center my-2">
+              <div key={msg.id} className="flex flex-col items-center gap-2 my-3">
                 <span className="rounded-full bg-zinc-900/90 px-3 py-1 text-xs text-zinc-400 border border-zinc-800">
                   {msg.content}
                 </span>
+
+                {/* Icebreaker Prompts Banner when chat starts */}
+                <div className="w-full max-w-sm mt-2 p-3 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 space-y-2 text-center">
+                  <div className="text-[11px] font-bold text-emerald-400 flex items-center justify-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5" /> 1-Tap Icebreaker Questions
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    {ICEBREAKER_PROMPTS.map((prompt, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => sendIcebreaker(prompt)}
+                        className="text-left text-[11px] px-3 py-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-emerald-500/50 text-zinc-300 hover:text-white transition-all cursor-pointer truncate"
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             );
           }
