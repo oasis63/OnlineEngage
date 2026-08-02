@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
-import { MessageSquare, Settings, Info, RefreshCw, Zap } from 'lucide-react';
+import { MessageSquare, Settings, RefreshCw, Zap } from 'lucide-react';
 import { useChatStore } from '../stores/useChatStore';
 
 export const Navbar: React.FC = () => {
@@ -58,13 +58,6 @@ export const Navbar: React.FC = () => {
               Leave
             </Button>
           )}
-
-          <Link href="/about">
-            <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs">
-              <Info className="h-4 w-4 sm:mr-1.5" />
-              <span className="hidden sm:inline">About</span>
-            </Button>
-          </Link>
 
           <Link href="/settings">
             <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs">
