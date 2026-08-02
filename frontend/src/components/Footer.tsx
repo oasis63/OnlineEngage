@@ -2,16 +2,16 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, Shield, Info, Heart, Lock, Globe, Sparkles } from 'lucide-react';
+import { MessageSquare, Shield, Info, Lock } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full border-t border-zinc-800/80 bg-zinc-950 text-zinc-400 text-xs py-10 px-4 sm:px-6 lg:px-8 mt-auto">
-      <div className="mx-auto max-w-7xl space-y-8">
+    <footer className="w-full border-t border-zinc-800/80 bg-zinc-950 text-zinc-400 text-xs py-12 px-4 sm:px-6 lg:px-8 mt-auto">
+      <div className="mx-auto max-w-7xl space-y-10">
         {/* Top Footer Row */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Col */}
-          <div className="space-y-3 md:col-span-2">
+          <div className="space-y-3 md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 group w-fit">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-700 shadow-md">
                 <MessageSquare className="h-4 w-4 text-white" />
@@ -20,9 +20,63 @@ export const Footer: React.FC = () => {
                 Wom<span className="text-emerald-500">egle</span>
               </span>
             </Link>
-            <p className="text-zinc-400 max-w-md leading-relaxed">
+            <p className="text-zinc-400 leading-relaxed text-xs">
               Womegle (womegle.in) is India&apos;s #1 free anonymous random 1-on-1 text, voice, and video chat platform. Connect with strangers across India instantly with zero registration, gender preference filters, and 8 Indian languages support.
             </p>
+          </div>
+
+          {/* Featured SEO Topics Col 1 */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Omegle Alternatives</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/omegle-alternative" className="hover:text-emerald-400 transition-colors">
+                  Best Omegle Alternative (2026)
+                </Link>
+              </li>
+              <li>
+                <Link href="/random-video-chat" className="hover:text-emerald-400 transition-colors">
+                  Random Video Chat
+                </Link>
+              </li>
+              <li>
+                <Link href="/anonymous-chat-india" className="hover:text-emerald-400 transition-colors">
+                  Anonymous Chat India
+                </Link>
+              </li>
+              <li>
+                <Link href="/talk-to-strangers" className="hover:text-emerald-400 transition-colors">
+                  Talk to Strangers Online
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Featured SEO Topics Col 2 */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Popular Chat Categories</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/video-chat-with-strangers" className="hover:text-emerald-400 transition-colors">
+                  Video Chat with Strangers
+                </Link>
+              </li>
+              <li>
+                <Link href="/chat-with-girls-india" className="hover:text-emerald-400 transition-colors">
+                  Chat with Girls & Guys
+                </Link>
+              </li>
+              <li>
+                <Link href="/safe-random-chat" className="hover:text-emerald-400 transition-colors">
+                  Safe Random Chat
+                </Link>
+              </li>
+              <li>
+                <Link href="/omegle-online-chat" className="hover:text-emerald-400 transition-colors">
+                  Omegle Online Chat
+                </Link>
+              </li>
+            </ul>
           </div>
 
           {/* Quick Links Col */}
@@ -40,29 +94,7 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-zinc-500 cursor-not-allowed">Terms & Privacy (Zero Data Stored)</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Featured SEO Topics Col */}
-          <div className="space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Explore Chat Modes</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/omegle-online-chat" className="hover:text-emerald-400 transition-colors">
-                  Omegle Online Chat
-                </Link>
-              </li>
-              <li>
-                <Link href="/omegle-online-video" className="hover:text-emerald-400 transition-colors">
-                  Omegle Online Video
-                </Link>
-              </li>
-              <li>
-                <Link href="/omegle-online-voice" className="hover:text-emerald-400 transition-colors">
-                  Omegle Online Voice
-                </Link>
+                <span className="text-zinc-500 cursor-not-allowed">Terms & Privacy (Zero Data Logs)</span>
               </li>
             </ul>
           </div>
