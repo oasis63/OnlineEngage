@@ -14,6 +14,9 @@ import {
   ExternalLink,
   Maximize,
   Minimize,
+  Shield,
+  EyeOff,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useChatStore } from '../stores/useChatStore';
@@ -42,15 +45,16 @@ export const VideoChat: React.FC<VideoChatProps> = ({
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isSplitView, setIsSplitView] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isShieldBlurred, setIsShieldBlurred] = useState(false);
 
-  // Attach local stream whenever stream or layout mode changes
+  // Attach local stream
   useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
     }
   }, [localStream, isSplitView]);
 
-  // Attach remote stream whenever stream or layout mode changes
+  // Attach remote stream
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
@@ -75,6 +79,10 @@ export const VideoChat: React.FC<VideoChatProps> = ({
     }
   };
 
+  const toggleShieldBlur = () => {
+    setIsShieldBlurred(!isShieldBlurred);
+  };
+
   const toggleFullScreen = () => {
     if (!containerRef.current) return;
 
@@ -96,6 +104,28 @@ export const VideoChat: React.FC<VideoChatProps> = ({
     document.addEventListener('fullscreenchange', handleFSChange);
     return () => document.removeEventListener('fullscreenchange', handleFSChange);
   }, []);
+
+  // Keyboard shortcut master controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in an input/textarea
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
+        return;
+      }
+      if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleShieldBlur();
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        toggleMute();
+      } else if (e.key === 'v' || e.key === 'V') {
+        e.preventDefault();
+        toggleVideo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isShieldBlurred, isMuted, isVideoOff, localStream]);
 
   if (permissionError) {
     const isSecurityError = permissionError.includes('CONNECTION_NOT_SECURE');
@@ -153,6 +183,19 @@ export const VideoChat: React.FC<VideoChatProps> = ({
       {/* Top Floating Controls */}
       <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
         <button
+          onClick={toggleShieldBlur}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold backdrop-blur-md shadow-lg transition-all cursor-pointer ${
+            isShieldBlurred
+              ? 'bg-rose-950/90 border-rose-700 text-rose-400 shadow-rose-950/50'
+              : 'bg-zinc-950/80 border-zinc-800 text-zinc-200 hover:bg-zinc-800 hover:text-white'
+          }`}
+          title="Emergency Shield Blur (Shortcut: B)"
+        >
+          <Shield className="w-3.5 h-3.5 text-emerald-400" />
+          <span>{isShieldBlurred ? 'Shield Active (B)' : 'Blur Shield (B)'}</span>
+        </button>
+
+        <button
           onClick={() => setIsSplitView(!isSplitView)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 hover:text-white backdrop-blur-md shadow-lg transition-all cursor-pointer"
         >
@@ -201,12 +244,26 @@ export const VideoChat: React.FC<VideoChatProps> = ({
               ref={remoteVideoRef}
               autoPlay
               playsInline
-              className="h-full w-full object-cover bg-black"
+              className={`h-full w-full object-cover bg-black transition-all duration-300 ${
+                isShieldBlurred ? 'blur-3xl scale-110 opacity-40' : ''
+              }`}
             />
-            <div className="absolute top-3 left-3 z-10 px-3 py-1 rounded-full bg-zinc-950/80 border border-zinc-800 text-xs font-semibold text-white backdrop-blur-md">
-              {partnerName || 'Stranger'}
+            <div className="absolute top-3 left-3 z-10 px-3 py-1 rounded-full bg-zinc-950/80 border border-zinc-800 text-xs font-semibold text-white backdrop-blur-md flex items-center gap-1.5">
+              <span>{partnerName || 'Stranger'}</span>
+              {isShieldBlurred && (
+                <span className="text-[10px] text-rose-400 font-mono font-bold uppercase">(Blurred)</span>
+              )}
             </div>
-            {(!remoteStream || connectionState !== 'connected') && (
+
+            {isShieldBlurred && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-20 gap-3 p-4 text-center">
+                <EyeOff className="w-10 h-10 text-rose-400 animate-pulse" />
+                <div className="text-xs font-bold text-white">Emergency Shield Active</div>
+                <p className="text-[11px] text-zinc-400 max-w-xs">Video is blurred for your privacy & safety. Press [B] or tap button to unblur.</p>
+              </div>
+            )}
+
+            {(!remoteStream || connectionState !== 'connected') && !isShieldBlurred && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/90 gap-3 z-10">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800 animate-pulse">
                   <Camera className="w-8 h-8 text-zinc-600" />
@@ -255,7 +312,7 @@ export const VideoChat: React.FC<VideoChatProps> = ({
               ? 'bg-rose-950/90 border-rose-800 text-rose-400'
               : 'bg-zinc-900 border-zinc-800 text-zinc-200 hover:text-white'
           }`}
-          title={isMuted ? 'Unmute Microphone' : 'Mute Microphone'}
+          title="Mute Microphone (Shortcut: M)"
         >
           {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
         </button>
@@ -267,9 +324,21 @@ export const VideoChat: React.FC<VideoChatProps> = ({
               ? 'bg-rose-950/90 border-rose-800 text-rose-400'
               : 'bg-zinc-900 border-zinc-800 text-zinc-200 hover:text-white'
           }`}
-          title={isVideoOff ? 'Turn Camera On' : 'Turn Camera Off'}
+          title="Turn Camera On/Off (Shortcut: V)"
         >
           {isVideoOff ? <VideoOff className="w-5 h-5" /> : <Camera className="w-5 h-5" />}
+        </button>
+
+        <button
+          onClick={toggleShieldBlur}
+          className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            isShieldBlurred
+              ? 'bg-rose-950/90 border-rose-800 text-rose-400'
+              : 'bg-zinc-900 border-zinc-800 text-emerald-400 hover:text-emerald-300'
+          }`}
+          title="Emergency Shield Blur (Shortcut: B)"
+        >
+          <Shield className="w-5 h-5" />
         </button>
       </div>
     </div>
