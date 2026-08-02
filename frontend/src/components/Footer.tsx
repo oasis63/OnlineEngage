@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, Shield, Info, Lock } from 'lucide-react';
+import { MessageSquare, Shield, Info, Lock, Globe, Video, Mic } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -21,24 +21,41 @@ export const Footer: React.FC = () => {
               </span>
             </Link>
             <p className="text-zinc-400 leading-relaxed text-xs">
-              Womegle (womegle.in) is India&apos;s #1 free anonymous random 1-on-1 text, voice, and video chat platform. Connect with strangers across India instantly with zero registration, gender preference filters, and 8 Indian languages support.
+              Womegle (womegle.in) is India&apos;s #1 free anonymous online chat, random video call & voice chat platform. Connect with strangers across India instantly with zero registration, gender preference filters, and 8 Indian languages support.
             </p>
           </div>
 
           {/* Featured SEO Topics Col 1 */}
           <div className="space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Omegle Alternatives</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Online Video Calls</h4>
             <ul className="space-y-2">
+              <li>
+                <Link href="/random-video-chat" className="hover:text-emerald-400 transition-colors">
+                  Random Video Chat India
+                </Link>
+              </li>
+              <li>
+                <Link href="/video-chat-with-strangers" className="hover:text-emerald-400 transition-colors">
+                  Video Chat with Strangers
+                </Link>
+              </li>
+              <li>
+                <Link href="/omegle-online-video" className="hover:text-emerald-400 transition-colors">
+                  Omegle Online Video Call
+                </Link>
+              </li>
               <li>
                 <Link href="/omegle-alternative" className="hover:text-emerald-400 transition-colors">
                   Best Omegle Alternative (2026)
                 </Link>
               </li>
-              <li>
-                <Link href="/random-video-chat" className="hover:text-emerald-400 transition-colors">
-                  Random Video Chat
-                </Link>
-              </li>
+            </ul>
+          </div>
+
+          {/* Featured SEO Topics Col 2 */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Online Chat & Voice</h4>
+            <ul className="space-y-2">
               <li>
                 <Link href="/anonymous-chat-india" className="hover:text-emerald-400 transition-colors">
                   Anonymous Chat India
@@ -49,31 +66,14 @@ export const Footer: React.FC = () => {
                   Talk to Strangers Online
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Featured SEO Topics Col 2 */}
-          <div className="space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Popular Chat Categories</h4>
-            <ul className="space-y-2">
               <li>
-                <Link href="/video-chat-with-strangers" className="hover:text-emerald-400 transition-colors">
-                  Video Chat with Strangers
+                <Link href="/omegle-online-voice" className="hover:text-emerald-400 transition-colors">
+                  Online Voice Chat (No Cam)
                 </Link>
               </li>
               <li>
                 <Link href="/chat-with-girls-india" className="hover:text-emerald-400 transition-colors">
                   Chat with Girls & Guys
-                </Link>
-              </li>
-              <li>
-                <Link href="/safe-random-chat" className="hover:text-emerald-400 transition-colors">
-                  Safe Random Chat
-                </Link>
-              </li>
-              <li>
-                <Link href="/omegle-online-chat" className="hover:text-emerald-400 transition-colors">
-                  Omegle Online Chat
                 </Link>
               </li>
             </ul>
@@ -94,9 +94,28 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-zinc-500 cursor-not-allowed">Terms & Privacy (Zero Data Logs)</span>
+                <Link href="/safe-random-chat" className="hover:text-emerald-400 transition-colors">
+                  Safe Random Chat Rules
+                </Link>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Comprehensive SEO Keyword Tag Cloud / Topic Directory */}
+        <div className="pt-6 border-t border-zinc-800/60 space-y-3">
+          <h4 className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider">Popular Search Topics in India</h4>
+          <div className="flex flex-wrap gap-2 text-[10px] text-zinc-500">
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Online Chat India</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Online Video Calls</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Online Voice Chat</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Hindi Random Video Chat</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Tamil Anonymous Chat</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Telugu Online Call</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Indian Omegle Alternative</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">1-on-1 Cam Chat</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">No Registration Chat Room</span>
+            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">Talk to Strangers Free</span>
           </div>
         </div>
 
