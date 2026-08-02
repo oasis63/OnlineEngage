@@ -17,11 +17,9 @@ import {
   Heart,
   Zap,
   AlertCircle,
-  Minimize2,
   SlidersHorizontal,
   SkipForward,
   LogOut,
-  UserCheck,
   Shield,
   Lock,
 } from 'lucide-react';
@@ -100,6 +98,19 @@ export default function HomePage() {
       return;
     }
 
+    setIsModalOpen(false);
+    if (mode !== 'text') {
+      await requestMediaPermissions();
+    }
+    joinQueue();
+  };
+
+  const handleInstantGuestStart = async () => {
+    setFormError(null);
+    if (!name || name === 'Anonymous') {
+      const randomGuestId = Math.floor(100 + Math.random() * 900);
+      setName(`Guest #${randomGuestId}`);
+    }
     setIsModalOpen(false);
     if (mode !== 'text') {
       await requestMediaPermissions();
@@ -252,9 +263,10 @@ export default function HomePage() {
       {/* Background Subtle Gradient Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Hero Badge */}
+      {/* Hero Badge - Real-Time Live Ticker */}
       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-700/50 text-xs font-bold text-emerald-400 mb-6 shadow-lg shadow-emerald-950/50 backdrop-blur-md">
-        <Zap className="w-4 h-4 text-emerald-400" /> India&apos;s #1 Anonymous Network
+        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+        <Zap className="w-4 h-4 text-emerald-400" /> 2,410 People Online Live in India • Instant Match
       </div>
 
       {/* Hero Taglines - Highlighting Text, Voice & Video Chat */}
@@ -305,16 +317,28 @@ export default function HomePage() {
         </button>
       </div>
 
-      {/* Hero Main Action Button */}
-      <Button
-        variant="primary"
-        size="lg"
-        onClick={() => setIsModalOpen(true)}
-        className="px-8 py-5 text-lg font-black bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white rounded-2xl shadow-2xl shadow-emerald-950/80 hover:scale-105 transition-all group"
-      >
-        <span>Start Chatting Now</span>
-        <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
-      </Button>
+      {/* Hero Dual CTA Actions - 1-Click Guest Match & Optional Profile Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-md mx-auto">
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={handleInstantGuestStart}
+          className="flex-1 px-6 py-4 text-base font-black bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white rounded-2xl shadow-2xl shadow-emerald-950/80 hover:scale-105 transition-all group"
+        >
+          <span>Instant Guest Match</span>
+          <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+        </Button>
+
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => setIsModalOpen(true)}
+          className="flex-1 px-6 py-4 text-base font-bold border-zinc-800 hover:border-emerald-700/50 text-zinc-300 hover:text-white rounded-2xl"
+        >
+          <SlidersHorizontal className="w-4 h-4 mr-2 text-emerald-400" />
+          <span>Filters & Profile</span>
+        </Button>
+      </div>
 
       {/* Feature Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-10 w-full max-w-3xl">
