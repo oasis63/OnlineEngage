@@ -3,20 +3,20 @@
 import React from 'react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { ShieldCheck, Lock, Zap, MessageSquare, Video, Mic, Globe, Heart } from 'lucide-react';
+import { ShieldCheck, Lock, Globe } from 'lucide-react';
 
 export default function AboutPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto w-full space-y-8">
       <div className="text-center space-y-3">
         <Badge variant="emerald" className="px-3 py-1 text-xs">
-          About AnonChat
+          About Womegle.in
         </Badge>
         <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
           100% Anonymous 1-on-1 Connections
         </h1>
         <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-          AnonChat connects people across India instantly for Text, Video, and Voice conversations without demanding personal data or account creation.
+          Womegle connects people across India instantly for Text, Video, and Voice conversations without demanding personal data or account creation.
         </p>
       </div>
 
