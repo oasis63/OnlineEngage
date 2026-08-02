@@ -1,4 +1,26 @@
+# ==============================================================================
+# Womegle.in — Robots Instruction File for Search Engine Crawlers
+# ==============================================================================
+
 User-agent: *
 Allow: /
+Allow: /about
+Allow: /omegle-alternative
+Allow: /random-video-chat
+Allow: /anonymous-chat-india
+Allow: /talk-to-strangers
+Allow: /video-chat-with-strangers
+Allow: /chat-with-girls-india
+Allow: /safe-random-chat
+Allow: /omegle-online-chat
+Allow: /omegle-online-video
+Allow: /omegle-online-voice
 
+# Disallow Internal API Routes and Non-Public Utility Paths
+Disallow: /api/
+Disallow: /socket.io/
+Disallow: /_next/
+Disallow: /settings
+
+# Specify Official XML Sitemap Location
 Sitemap: https://womegle.in/sitemap.xml
