@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { Navbar } from '../components/Navbar';
+import { Footer } from '../components/Footer';
 
 export const metadata: Metadata = {
   title: 'Womegle — Best Omegle Alternative for Online Chat, Video & Voice in India',
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex min-h-screen flex-col bg-background text-foreground">
         <Navbar />
         <main className="flex flex-1 flex-col">{children}</main>
+        <Footer />
       </body>
     </html>
   );

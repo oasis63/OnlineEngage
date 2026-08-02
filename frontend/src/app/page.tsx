@@ -22,6 +22,8 @@ import {
   SkipForward,
   LogOut,
   UserCheck,
+  Shield,
+  Lock,
 } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../shared/index';
 import { useChatStore } from '../stores/useChatStore';
@@ -327,6 +329,34 @@ export default function HomePage() {
             <div className="text-[10px] text-zinc-400">{f.sub}</div>
           </div>
         ))}
+      </div>
+
+      {/* Bottom Description Section */}
+      <div className="mt-16 pt-12 border-t border-zinc-800/80 text-left w-full max-w-4xl space-y-6">
+        <h2 className="text-2xl font-extrabold text-white">Why Womegle is India&apos;s Preferred Anonymous Chat Platform</h2>
+        <p className="text-sm text-zinc-400 leading-relaxed">
+          Womegle (womegle.in) was created to offer a safe, high-speed, and modern 1-on-1 random chat experience for users across India. Whether you want to practice your English speaking, talk in Hindi, find people who share your passion for anime, gaming, or Bollywood, or simply have a friendly late-night conversation, Womegle connects you instantly.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="p-5 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-2">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Shield className="w-4 h-4 text-emerald-400" /> Privacy & Safety First
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              No account creation or phone numbers required. All matchmaking queues and active chat sessions are maintained ephemerally in RAM memory.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-2">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-400" /> 8 Indian Languages & Gender Filters
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Filter strangers by Hindi, English, Hinglish, Tamil, Telugu, Kannada, Malayalam, or Marathi, and set your preferred gender matching.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Profile & Matching Details Modal / Drawer */}
