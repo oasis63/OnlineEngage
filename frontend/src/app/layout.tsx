@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 import { Navbar } from '../components/Navbar';
@@ -126,6 +127,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-screen flex-col bg-background text-foreground">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-FVXFDWGYM9"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-FVXFDWGYM9');
+          `}
+        </Script>
         <Navbar />
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />
