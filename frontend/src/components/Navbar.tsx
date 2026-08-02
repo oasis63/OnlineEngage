@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
-import { MessageSquare, Shield, Settings, Info, RefreshCw, Zap } from 'lucide-react';
+import { MessageSquare, Settings, Info, RefreshCw, Zap } from 'lucide-react';
 import { useChatStore } from '../stores/useChatStore';
 
 export const Navbar: React.FC = () => {
@@ -18,11 +18,11 @@ export const Navbar: React.FC = () => {
             <MessageSquare className="h-5 w-5 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-black tracking-tight text-white group-hover:text-emerald-400 transition-colors">
-              Anon<span className="text-emerald-500">Chat</span>
+            <span className="text-xl font-black tracking-tight text-white group-hover:text-emerald-400 transition-colors">
+              Wom<span className="text-emerald-500">egle</span>
             </span>
-            <span className="text-[10px] font-medium text-zinc-400 tracking-wider uppercase">
-              India 1-on-1
+            <span className="text-[10px] font-semibold text-emerald-400/90 tracking-wider uppercase">
+              WOMEGLE.IN • INDIA 1-ON-1
             </span>
           </div>
         </Link>
