@@ -130,7 +130,7 @@ export default function HomePage() {
   // Connected Chat View
   if (status === 'connected') {
     return (
-      <div className="flex flex-1 flex-col md:flex-row h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] p-2 sm:p-3 max-w-[1600px] mx-auto w-full gap-3 overflow-hidden">
+      <div className="flex flex-1 flex-col md:flex-row h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] md:h-[calc(100vh-4rem)] md:max-h-[calc(100vh-4rem)] p-2 sm:p-3 max-w-[1600px] mx-auto w-full gap-3 overflow-hidden">
         {/* Mobile Top Connected Bar (Visible only on mobile screens) */}
         <div className="flex md:hidden items-center justify-between p-2.5 bg-zinc-950/90 border border-zinc-800 rounded-2xl backdrop-blur-xl shrink-0">
           <div className="flex items-center gap-2">
