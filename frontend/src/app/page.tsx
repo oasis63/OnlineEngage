@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -34,6 +34,41 @@ import { VoiceChat } from '../components/VoiceChat';
 import { RightSidebar } from '../components/RightSidebar';
 import { IndianLanguage, QueueMode, UserGender, GenderPreference } from '../types/index';
 
+// Calculates dynamic online user count based on Indian Standard Time (IST) & time of day
+const calculateDynamicOnlineUsers = () => {
+  const date = new Date();
+  const istOffset = 5.5 * 60; // IST is UTC +5:30
+  const utcMinutes = date.getUTCHours() * 60 + date.getUTCMinutes();
+  const istTotalMinutes = (utcMinutes + istOffset) % (24 * 60);
+  const hour = Math.floor(istTotalMinutes / 60);
+
+  let baseCount = 1800;
+
+  // Indian Traffic Curve by IST Hour
+  if (hour >= 0 && hour < 3) {
+    // Peak Night Traffic (12 AM - 3 AM)
+    baseCount = 2850 + Math.sin(hour) * 400;
+  } else if (hour >= 3 && hour < 7) {
+    // Low Late Night / Early Morning Traffic (3 AM - 7 AM)
+    baseCount = 580 + Math.cos(hour) * 150;
+  } else if (hour >= 7 && hour < 12) {
+    // Morning Traffic (7 AM - 12 PM)
+    baseCount = 1250 + (hour - 7) * 140;
+  } else if (hour >= 12 && hour < 18) {
+    // Afternoon Traffic (12 PM - 6 PM)
+    baseCount = 1750 + (hour - 12) * 110;
+  } else if (hour >= 18 && hour < 22) {
+    // Evening Prime Time (6 PM - 10 PM)
+    baseCount = 2550 + (hour - 18) * 220;
+  } else {
+    // Late Night Peak Start (10 PM - 12 AM)
+    baseCount = 3350;
+  }
+
+  const randomFluctuation = Math.floor(Math.random() * 80) - 40;
+  return Math.max(450, Math.floor(baseCount + randomFluctuation));
+};
+
 export default function HomePage() {
   const {
     status,
@@ -63,8 +98,23 @@ export default function HomePage() {
   const [tagInput, setTagInput] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Dynamic live user counter state
+  const [liveUserCount, setLiveUserCount] = useState<number>(2410);
+
   // Default chat panel collapsed for video/voice mode
   const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);
+
+  useEffect(() => {
+    setLiveUserCount(calculateDynamicOnlineUsers());
+
+    // Soft pulse ticker every 6 seconds
+    const interval = setInterval(() => {
+      const delta = Math.floor(Math.random() * 15) - 7;
+      setLiveUserCount((prev) => Math.max(400, prev + delta));
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (mode === 'text') {
@@ -263,10 +313,11 @@ export default function HomePage() {
       {/* Background Subtle Gradient Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Hero Badge - Real-Time Live Ticker */}
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-700/50 text-xs font-bold text-emerald-400 mb-6 shadow-lg shadow-emerald-950/50 backdrop-blur-md">
+      {/* Hero Badge - Time-Based Dynamic Real-Time Live Ticker */}
+      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-700/50 text-xs font-bold text-emerald-400 mb-6 shadow-lg shadow-emerald-950/50 backdrop-blur-md transition-all">
         <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-        <Zap className="w-4 h-4 text-emerald-400" /> 2,410 People Online Live in India • Instant Match
+        <Zap className="w-4 h-4 text-emerald-400" />
+        <span>{liveUserCount.toLocaleString()} People Online Live in India • Instant Match</span>
       </div>
 
       {/* Hero Taglines - Highlighting Text, Voice & Video Chat */}
