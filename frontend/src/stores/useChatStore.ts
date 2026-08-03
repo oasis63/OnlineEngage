@@ -58,7 +58,7 @@ export const useChatStore = create<ChatStoreState>((set) => ({
   gender: 'male',
   interestedIn: 'all',
   age: 21,
-  mode: 'text',
+  mode: 'video', // Default mode set to video chat as requested
   language: 'hindi',
   interests: [],
 
@@ -132,7 +132,7 @@ export const useChatStore = create<ChatStoreState>((set) => ({
       gender: 'male',
       interestedIn: 'all',
       age: 21,
-      mode: 'text',
+      mode: 'video', // Default mode set to video chat
       language: 'hindi',
       interests: [],
       status: 'idle',
