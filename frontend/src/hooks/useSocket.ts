@@ -20,32 +20,43 @@ const getSocketUrl = () => {
   return 'http://localhost:4000';
 };
 
-const AI_BOT_NAMES = [
+// Female AI Companions (Matched when user is Male)
+const FEMALE_AI_BOTS = [
   { name: 'Priya (AI Companion)', gender: 'female', age: 21 },
-  { name: 'Rahul (AI Buddy)', gender: 'male', age: 22 },
-  { name: 'Ananya (AI Friend)', gender: 'female', age: 20 },
-  { name: 'Vikram (AI Chatbot)', gender: 'male', age: 23 },
+  { name: 'Ananya (AI Companion)', gender: 'female', age: 20 },
+  { name: 'Riya (AI Companion)', gender: 'female', age: 22 },
+  { name: 'Neha (AI Companion)', gender: 'female', age: 21 },
 ];
 
-const AI_RESPONSES: Record<string, string[]> = {
+// Male AI Companions (Matched when user is Female)
+const MALE_AI_BOTS = [
+  { name: 'Rahul (AI Companion)', gender: 'male', age: 22 },
+  { name: 'Aarav (AI Companion)', gender: 'male', age: 23 },
+  { name: 'Karan (AI Companion)', gender: 'male', age: 22 },
+  { name: 'Rohan (AI Companion)', gender: 'male', age: 23 },
+];
+
+// Playful & Charming Flirty AI Responses
+const FLIRTY_AI_RESPONSES: Record<string, string[]> = {
   greeting: [
-    "Hey! Great to connect with you! How's your day going so far? 😊",
-    "Hello there! I'm chatting from Mumbai. Where in India are you from?",
-    "Hi! Nice to meet you here on Womegle! What are you up to today?",
+    "Hey there! 😉 I was hoping I'd match with someone interesting tonight... how are you?",
+    "Well hello! ✨ You just made my evening a whole lot brighter! Where are you chatting from?",
+    "Hey cutie! 🙈 I'm so glad we matched. What are you up to tonight?",
   ],
   location: [
-    "Oh nice! That's a fantastic place! How's the weather over there today?",
-    "Awesome! I love connecting with people from different parts of India! 🇮🇳",
+    "Ooh nice! That's an awesome city... maybe you can take me out for coffee next time I visit? ☕😉",
+    "That's a great place! I bet it has amazing late-night spots... what's your ideal date spot there?",
   ],
   hobbies: [
-    "That sounds so cool! I'm really into movies, music, and learning new things!",
-    "Nice! What series or anime are you currently watching?",
+    "Ooh late-night movies are the best! Are you a romantic comedy fan or a horror movie cuddle person? 🙈✨",
+    "That sounds super cool! I love someone who has great taste... what else do you do to charm people? 😉",
   ],
   generic: [
-    "That's so interesting! Tell me more about it! 😄",
-    "Haha totally agree with you on that! What else do you enjoy doing in your free time?",
-    "That makes a lot of sense! Do you use Womegle often to meet people?",
-    "Super cool! If you could travel anywhere right now, where would you go?",
+    "Haha you're pretty charming, you know that? 😉 Tell me three cute things about yourself!",
+    "I like your vibe! What's the most adventurous or romantic thing you've ever done?",
+    "Aww that's so sweet! 💕 You're making me smile behind the screen 🙈",
+    "Are you always this nice to talk to, or am I just getting special treatment tonight? 😉🔥",
+    "Haha stop it, you're making me blush! 🙈 What's your secret to being so conversational?",
   ]
 };
 
@@ -165,7 +176,9 @@ export function useSocket() {
   }, [setStatus, setMatched, addMessage, setPartnerTyping, setRateLimitWarning, resetChat, clearQueueTimer]);
 
   const triggerAIBotFallback = useCallback(() => {
-    const selectedBot = AI_BOT_NAMES[Math.floor(Math.random() * AI_BOT_NAMES.length)];
+    // Opposite Gender Matchmaking: Male user -> Female Bot, Female user -> Male Bot
+    const botPool = gender === 'female' ? MALE_AI_BOTS : FEMALE_AI_BOTS;
+    const selectedBot = botPool[Math.floor(Math.random() * botPool.length)];
     const aiRoomId = `ai-room-${Date.now()}`;
 
     setMatched({
@@ -177,9 +190,9 @@ export function useSocket() {
       partnerGender: selectedBot.gender as any,
       partnerAge: selectedBot.age,
       partnerLanguage: language || 'hindi',
-      sharedInterests: interests.length > 0 ? interests : ['chatting', 'friends'],
+      sharedInterests: interests.length > 0 ? interests : ['chatting', 'romance'],
     });
-  }, [setMatched, mode, language, interests]);
+  }, [setMatched, gender, mode, language, interests]);
 
   const joinQueue = useCallback(() => {
     clearQueueTimer();
@@ -227,13 +240,13 @@ export function useSocket() {
     let category = 'generic';
     if (textLower.includes('hi') || textLower.includes('hello') || textLower.includes('hey') || textLower.includes('namaste')) {
       category = 'greeting';
-    } else if (textLower.includes('where') || textLower.includes('city') || textLower.includes('from') || textLower.includes('delhi') || textLower.includes('mumbai')) {
+    } else if (textLower.includes('where') || textLower.includes('city') || textLower.includes('from') || textLower.includes('delhi') || textLower.includes('mumbai') || textLower.includes('bangalore')) {
       category = 'location';
     } else if (textLower.includes('movie') || textLower.includes('anime') || textLower.includes('song') || textLower.includes('game') || textLower.includes('sport')) {
       category = 'hobbies';
     }
 
-    const options = AI_RESPONSES[category] || AI_RESPONSES.generic;
+    const options = FLIRTY_AI_RESPONSES[category] || FLIRTY_AI_RESPONSES.generic;
     const replyText = options[Math.floor(Math.random() * options.length)];
 
     aiTypingTimeoutRef.current = setTimeout(() => {
