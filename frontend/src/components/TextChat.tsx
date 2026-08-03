@@ -21,12 +21,17 @@ const ICEBREAKER_PROMPTS = [
 export const TextChat: React.FC<TextChatProps> = ({ onSendMessage, onSendTyping, onSendStopTyping }) => {
   const { messages, isPartnerTyping, rateLimitWarning, partnerName } = useChatStore();
   const [inputText, setInputText] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-scroll to bottom
+  // Auto-scroll ONLY inner messages list without scrolling the outer window/page
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   useEffect(() => {
@@ -66,8 +71,8 @@ export const TextChat: React.FC<TextChatProps> = ({ onSendMessage, onSendTyping,
         </div>
       )}
 
-      {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      {/* Messages Scroll Area - Ref attached here to isolate scrolling */}
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg: ChatMessage) => {
           if (msg.sender === 'system') {
             return (
@@ -130,7 +135,6 @@ export const TextChat: React.FC<TextChatProps> = ({ onSendMessage, onSendTyping,
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input controls */}
