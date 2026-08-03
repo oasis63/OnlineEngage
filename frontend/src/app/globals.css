@@ -3,20 +3,22 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  html, body {
+    height: 100%;
+    overscroll-behavior-y: none;
     @apply bg-background text-foreground antialiased selection:bg-emerald-500 selection:text-white;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Custom scrollbar styling */
+/* Custom scrollbar styling for Chrome, Safari & Edge */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(18, 18, 21, 0.5);
+  background: rgba(18, 18, 21, 0.4);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -25,5 +27,22 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(113, 113, 122, 0.8);
+  background: rgba(161, 161, 170, 0.8);
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(63, 63, 70, 0.6) rgba(18, 18, 21, 0.4);
+}
+
+/* Custom utility class to hide scrollbars completely when desired */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
