@@ -22,7 +22,7 @@ export const Navbar: React.FC = () => {
               Wom<span className="text-emerald-500">egle</span>
             </span>
             <span className="text-[10px] font-semibold text-emerald-400/90 tracking-wider uppercase">
-              WOMEGLE.IN • INDIA 1-ON-1
+              INDIA&apos;S #1 ANONYMOUS CHAT
             </span>
           </div>
         </Link>

@@ -22,6 +22,7 @@ import {
   LogOut,
   Shield,
   Lock,
+  CheckCircle2,
 } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../shared/index';
 import { useChatStore } from '../stores/useChatStore';
@@ -166,11 +167,6 @@ export default function HomePage() {
       await requestMediaPermissions();
     }
     joinQueue();
-  };
-
-  const openModalWithMode = (selectedMode: QueueMode) => {
-    setMode(selectedMode);
-    setIsModalOpen(true);
   };
 
   if (status === 'waiting') {
@@ -329,43 +325,48 @@ export default function HomePage() {
       </h1>
 
       <p className="text-base sm:text-xl text-zinc-400 max-w-2xl mx-auto font-normal leading-relaxed mb-8">
-        No sign up required. Choose Text, HD Video, or Crystal-Clear Voice Chat to connect with strangers across India in seconds!
+        No sign up required. Select Text, HD Video, or Crystal-Clear Voice Chat to connect with strangers across India in seconds!
       </p>
 
-      {/* Interactive Mode Cards on Hero Page */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl mx-auto mb-8">
-        <button
-          onClick={() => openModalWithMode('text')}
-          className="flex flex-col items-center p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-900 transition-all text-center group cursor-pointer"
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-950/80 border border-emerald-700/50 text-emerald-400 mb-2 group-hover:scale-110 transition-transform">
-            <MessageSquare className="w-6 h-6" />
-          </div>
-          <h3 className="text-sm font-bold text-white mb-0.5">Text Chat</h3>
-          <p className="text-[11px] text-zinc-400">Instant 1-on-1 messaging</p>
-        </button>
-
-        <button
-          onClick={() => openModalWithMode('video')}
-          className="flex flex-col items-center p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-900 transition-all text-center group cursor-pointer"
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-950/80 border border-emerald-700/50 text-emerald-400 mb-2 group-hover:scale-110 transition-transform">
-            <Video className="w-6 h-6" />
-          </div>
-          <h3 className="text-sm font-bold text-white mb-0.5">Video Chat</h3>
-          <p className="text-[11px] text-zinc-400">50/50 Dual HD Video view</p>
-        </button>
-
-        <button
-          onClick={() => openModalWithMode('voice')}
-          className="flex flex-col items-center p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-900 transition-all text-center group cursor-pointer"
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-950/80 border border-emerald-700/50 text-emerald-400 mb-2 group-hover:scale-110 transition-transform">
-            <Mic className="w-6 h-6" />
-          </div>
-          <h3 className="text-sm font-bold text-white mb-0.5">Voice Chat</h3>
-          <p className="text-[11px] text-zinc-400">Low-latency voice calls</p>
-        </button>
+      {/* Interactive Mode Cards with Active Glow Selection */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full max-w-2xl mx-auto mb-8">
+        {[
+          { id: 'text', label: 'Text Chat', sub: 'Instant 1-on-1 messaging', icon: <MessageSquare className="w-6 h-6" /> },
+          { id: 'video', label: 'Video Chat', sub: '50/50 Dual HD Video view', icon: <Video className="w-6 h-6" /> },
+          { id: 'voice', label: 'Voice Chat', sub: 'Low-latency voice calls', icon: <Mic className="w-6 h-6" /> },
+        ].map((m) => {
+          const isSelected = mode === m.id;
+          return (
+            <button
+              key={m.id}
+              onClick={() => setMode(m.id as QueueMode)}
+              className={`relative flex flex-col items-center p-4 rounded-2xl border transition-all text-center group cursor-pointer ${
+                isSelected
+                  ? 'bg-emerald-950/70 border-emerald-500 ring-2 ring-emerald-500/40 shadow-xl shadow-emerald-950/60'
+                  : 'bg-zinc-900/60 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/80'
+              }`}
+            >
+              {isSelected && (
+                <div className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/90 border border-emerald-800 px-2 py-0.5 rounded-full">
+                  <CheckCircle2 className="w-3 h-3" /> Selected
+                </div>
+              )}
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-xl mb-2 transition-transform group-hover:scale-110 ${
+                  isSelected
+                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-950'
+                    : 'bg-zinc-800/80 text-zinc-300 border border-zinc-700/50'
+                }`}
+              >
+                {m.icon}
+              </div>
+              <h3 className={`text-sm font-bold mb-0.5 ${isSelected ? 'text-emerald-400' : 'text-white'}`}>
+                {m.label}
+              </h3>
+              <p className="text-[11px] text-zinc-400">{m.sub}</p>
+            </button>
+          );
+        })}
       </div>
 
       {/* Hero Dual CTA Actions - 1-Click Guest Match & Optional Profile Filter */}
@@ -376,7 +377,7 @@ export default function HomePage() {
           onClick={handleInstantGuestStart}
           className="flex-1 px-6 py-4 text-base font-black bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-white rounded-2xl shadow-2xl shadow-emerald-950/80 hover:scale-105 transition-all group"
         >
-          <span>Instant Guest Match</span>
+          <span>Instant Guest Match ({mode === 'video' ? 'Video' : mode === 'voice' ? 'Voice' : 'Text'})</span>
           <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
 
